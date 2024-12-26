@@ -1,4 +1,4 @@
-package org.example.pharm;
+package org.example.museum;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * и сканирование компонентов.
  */
 @SpringBootApplication
-public class PharmApplication {
+public class MuseumApplication {
 
     /**
      * Точка входа в приложение.
@@ -18,6 +18,6 @@ public class PharmApplication {
      * @param args аргументы командной строки, передаваемые при запуске приложения
      */
     public static void main(String[] args) {
-        SpringApplication.run(PharmApplication.class, args);
+        SpringApplication.run(MuseumApplication.class, args);
     }
 }
