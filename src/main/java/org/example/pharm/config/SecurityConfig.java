@@ -1,7 +1,7 @@
-package org.example.pharm.config;
+package org.example.museums.config;
 
-import org.example.pharm.model.User;
-import org.example.pharm.service.UserService;
+import org.example.museums.model.User;
+import org.example.museums.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -73,72 +73,6 @@ public class SecurityConfig {
                                 .toList());
             }
             throw new RuntimeException("User not found");
-        };
-    }
-
-    /**
-     * Бин для создания менеджера аутентификации с использованием настроенного UserDetailsService
-     * и PasswordEncoder.
-     *
-     * @param http объект HttpSecurity для конфигурации безопасности
-     * @return AuthenticationManager для аутентификации пользователей
-     * @throws Exception если возникает ошибка при настройке аутентификации
-     */
-    @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authBuilder.userDetailsService(userDetailsService()).passwordEncoder(passwordEncoder());
-        return authBuilder.build();
-    }
-
-    /**
-     * Бин для настройки фильтрации безопасности.
-     * Настройка маршрутов, доступных пользователю в зависимости от ролей.
-     * Также включает конфигурацию кастомных страниц входа и выхода.
-     *
-     * @param http объект HttpSecurity для конфигурации безопасности
-     * @return SecurityFilterChain, который управляет безопасностью веб-приложения
-     * @throws Exception если возникает ошибка при конфигурации безопасности
-     */
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable()) // Отключение CSRF для упрощения
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/css/**", "/js/**", "/register", "/login").permitAll() // Страницы входа и регистрации доступны всем
-                        .requestMatchers("/users").hasRole("ADMIN") // Доступ к странице /users только для ADMIN
-                        .anyRequest().authenticated() // Остальные страницы требуют аутентификации
-                )
-                .formLogin(form -> form
-                        .loginPage("/login") // Кастомная страница логина
-                        .defaultSuccessUrl("/") // Перенаправление при успешном входе
-                        .failureUrl("/login?error=true") // Перенаправление при ошибке входа
-                        .permitAll()
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout=true") // Перенаправление на логин после выхода
-                        .permitAll()
-                )
-                .exceptionHandling(ex -> ex
-                        .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            response.sendRedirect("/403"); // Редирект на главную страницу при ошибке доступа
-                        })
-                );
-        return http.build();
-    }
-
-    /**
-     * Бин для кастомного обработчика успешной аутентификации.
-     * Перенаправляет пользователя на главную страницу после успешного входа.
-     *
-     * @return AuthenticationSuccessHandler для перенаправления на главную страницу после входа
-     */
-    @Bean
-    public AuthenticationSuccessHandler customAuthenticationSuccessHandler() {
-        return (HttpServletRequest request, HttpServletResponse response,
-                org.springframework.security.core.Authentication authentication) -> {
-            response.sendRedirect("/"); // После входа перенаправить на главную
         };
     }
 }
